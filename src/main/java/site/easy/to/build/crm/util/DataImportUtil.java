@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.Set;
@@ -16,6 +17,30 @@ import org.apache.commons.csv.CSVFormat;
 import jakarta.persistence.Entity;
 
 public class DataImportUtil {
+
+    public static void importData(File file, Class<?> entityClass) throws Exception {
+        checkHeaderMatchWithEntityField(file, entityClass);
+        String insertQuery = generateInsertQuery(entityClass);
+        try (Connection connection = DatabaseUtil.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(insertQuery);
+            CSVParser parser = new CSVParser(new FileReader(file), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+
+            connection.setAutoCommit(false);
+
+            for (CSVRecord record : parser) {
+                Object entity = createEntityInstance(entityClass, record);
+                addEntityIntoInsertQuery(stmt, entity);
+                stmt.addBatch();
+            }
+
+            stmt.executeBatch(); 
+            connection.commit(); 
+
+            System.out.println("Data import successful");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     public static void checkHeaderMatchWithEntityField(File file, Class<?> entityClass) throws Exception {
         if (!entityClass.isAnnotationPresent(Entity.class)) {
