@@ -7,7 +7,6 @@ public class WeatherData {
     private CurrentWeather current;
 
     // Getters and setters
-
     public Location getLocation() {
         return location;
     }

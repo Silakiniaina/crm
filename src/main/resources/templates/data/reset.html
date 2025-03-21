@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{/general/head.html}"></div>
+<meta name="_csrf" content="${_csrf.token}"/>
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+<!-- Editable CSS -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/dataTables.bootstrap4.css}">
+<link th:href="@{/css/login-register-lock.css}" rel="stylesheet">
+<link th:href="@{/css/jquery.toast.css}" rel="stylesheet">
+<!-- Custom CSS -->
+<link th:href="@{/css/style.min.css}" rel="stylesheet">
+<!-- page css -->
+<link th:href="@{/css/pages/inbox.css}" rel="stylesheet">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body class="skin-blue fixed-layout">
+<!-- Preloader -->
+<div class="preloader">
+    <div class="loader">
+        <div class="loader__figure"></div>
+        <p class="loader__label">CRM</p>
+    </div>
+</div>
+<!-- Main wrapper -->
+<div id="main-wrapper">
+    <!-- Topbar header -->
+    <div th:insert="~{/general/header.html}"></div>
+    <!-- Left Sidebar -->
+    <div th:insert="~{/general/left-sidebar.html}"></div>
+    <!-- Page wrapper -->
+    <div class="page-wrapper">
+        <!-- Container fluid -->
+        <div class="container-fluid">
+            <!-- Bread crumb and right sidebar toggle -->
+            <div th:insert="~{/general/page-titles.html}"></div>
+            <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div th:if="${message != null}" class="alert" th:classappend="${success} ? 'alert-success' : 'alert-danger'">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
+                                <h3 class="text-info"><i class="fa fa-exclamation-circle"></i> Database Reset Status</h3>
+                                <span th:text="${message}"></span>
+                            </div>
+                            
+                            <h4 class="card-title">Database Reset Tool</h4>
+                            <div class="alert alert-warning">
+                                <h5><i class="fa fa-exclamation-triangle"></i> Warning!</h5>
+                                <p>This action will delete all data from the database except admin accounts. This includes:</p>
+                                <ul>
+                                    <li>All customers and their information</li>
+                                    <li>All leads, tickets, and contracts</li>
+                                    <li>All email templates</li>
+                                    <li>All user profiles (except user profiles)</li>
+                                </ul>
+                                <p>This action <strong>cannot be undone</strong>. Please make sure you want to proceed.</p>
+                            </div>
+                            
+                            <div class="mt-4" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                <form id="resetForm" th:action="${home + 'data/reset'}" method="post">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="confirmReset" required>
+                                            <label class="custom-control-label" for="confirmReset">I confirm that I want to reset all database data</label>
+                                        </div>
+                                    </div>
+                                    <button id="resetBtn" type="button" class="btn btn-danger" disabled>Reset Database</button>
+                                </form>
+                            </div>
+                            
+                            <div class="mt-4" th:unless="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                <div class="alert alert-danger">
+                                    <h5><i class="fa fa-lock"></i> Access Denied</h5>
+                                    <p>You do not have permission to use this tool. Only administrators can reset the database.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Page Content -->
+            <!-- Right sidebar -->
+            <div th:insert="~{/general/right-sidebar.html}"></div>
+        </div>
+        <!-- End Container fluid -->
+    </div>
+    <!-- End Page wrapper -->
+    <!-- footer -->
+    <div th:insert="~{/general/footer.html}"></div>
+</div>
+<!-- End Wrapper -->
+
+<!-- All Jquery -->
+<script th:inline="javascript">
+    var home = /*[[${home}]]*/ null;
+</script>
+<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<script th:src="@{/js/library/popper.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript"></script>
+<!-- slimscrollbar scrollbar JavaScript -->
+<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript"></script>
+<!--Wave Effects -->
+<script th:src="@{/js/library/waves.js}" type="text/javascript"></script>
+<!--Menu sidebar -->
+<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript"></script>
+<!--stickey kit -->
+<script th:src="@{/js/library/sticky-kit.min.js}"></script>
+<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript"></script>
+<!--Custom JavaScript -->
+<script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/jquery.toast.js}"></script>
+<script th:src="@{/js/library/toastr.js}"></script>
+
+<script>
+    $(document).ready(function() {
+        // Enable/disable reset button based on checkbox
+        $('#confirmReset').change(function() {
+            $('#resetBtn').prop('disabled', !this.checked);
+        });
+        
+        // Add confirmation modal before submitting
+        $('#resetBtn').click(function() {
+            if (confirm('Are you ABSOLUTELY sure you want to reset all database data? This cannot be undone.')) {
+                $('#resetForm').submit();
+            }
+        });
+    });
+</script>
+</body>
+</html>
