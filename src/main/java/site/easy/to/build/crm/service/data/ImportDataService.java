@@ -4,6 +4,6 @@ import java.io.File;
 
 public interface ImportDataService {
     
-    public void importData(File f , Class<?> entity);
+    public void importData(File f , Class<?> entity) throws Exception;
 }
 

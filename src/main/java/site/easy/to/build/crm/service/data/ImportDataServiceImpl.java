@@ -12,7 +12,7 @@ public class ImportDataServiceImpl implements ImportDataService{
     
     @Override
     @Transactional
-    public void importData(File f , Class<?> entity) {
+    public void importData(File f , Class<?> entity) throws Exception{
         DataImportUtil.importData(f, entity);
     }
 }
