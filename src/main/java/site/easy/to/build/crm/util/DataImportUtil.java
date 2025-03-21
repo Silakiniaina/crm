@@ -48,4 +48,16 @@ public class DataImportUtil {
     
         return "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + valuePlaceholders + ")";
     }
+
+    private static Object convertValue(String value, Class<?> type) {
+        if (type == int.class || type == Integer.class) {
+            return Integer.parseInt(value);
+        } else if (type == double.class || type == Double.class) {
+            return Double.parseDouble(value);
+        } else if (type == boolean.class || type == Boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else {
+            return value; // Default to String
+        }
+    }
 }
