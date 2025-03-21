@@ -3,11 +3,13 @@ package site.easy.to.build.crm.util;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.CSVFormat;
 
 import jakarta.persistence.Entity;
@@ -59,5 +61,23 @@ public class DataImportUtil {
         } else {
             return value; // Default to String
         }
+    }
+
+
+    public static Object createEntityInstance(Class<?> entityClass, CSVRecord record) throws Exception {
+        Object entity = entityClass.getDeclaredConstructor().newInstance();
+
+        for (Field field : entityClass.getDeclaredFields()) {
+            String fieldName = field.getName();
+            String csvValue = record.get(fieldName);
+
+            String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+            Method setter = entityClass.getMethod(setterName, field.getType());
+
+            Object convertedValue = convertValue(csvValue, field.getType());
+            setter.invoke(entity, convertedValue);
+        }
+
+        return entity;
     }
 }
