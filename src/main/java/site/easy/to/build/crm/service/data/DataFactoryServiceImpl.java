@@ -16,11 +16,7 @@ public class DataFactoryServiceImpl implements DataFactoryService{
     @Override
     public int resetData() {
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate(); 
-        
-        entityManager.createNativeQuery("TRUNCATE TABLE users").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE oauth_users").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE user_profile").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE user_roles").executeUpdate();
+
         entityManager.createNativeQuery("TRUNCATE TABLE employee").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE email_template").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE customer_login_info").executeUpdate();
