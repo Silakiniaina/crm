@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,5 +80,20 @@ public class DataImportUtil {
         }
 
         return entity;
+    }
+
+    public static void addEntityIntoInsertQuery(PreparedStatement stmt, Object entity) throws Exception {
+        Field[] fields = entity.getClass().getDeclaredFields();
+
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            String fieldName = field.getName();
+            
+            String getterName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+            Method getter = entity.getClass().getMethod(getterName);
+            
+            Object value = getter.invoke(entity);
+            stmt.setObject(i + 1, value);
+        }
     }
 }
