@@ -6,6 +6,9 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -60,5 +63,18 @@ public class DatabaseUtil {
             sb.append(word).append(" ");
         }
         return sb.toString().trim();
+    }
+
+    public static Connection getConnection() {
+        Connection con = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/eval_n1_crm?useSSL=false&serverTimezone=UTC", "root", "DashDashGo2K23!!");
+        } 
+        catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();  
+        }
+        
+        return con;
     }
 }
