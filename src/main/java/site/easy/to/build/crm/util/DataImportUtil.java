@@ -89,7 +89,6 @@ public class DataImportUtil {
         }
     }
 
-
     public static Object createEntityInstance(Class<?> entityClass, CSVRecord record) throws Exception {
         Object entity = entityClass.getDeclaredConstructor().newInstance();
 
