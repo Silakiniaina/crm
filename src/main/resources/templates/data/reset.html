@@ -65,8 +65,8 @@
                                 <p>This action <strong>cannot be undone</strong>. Please make sure you want to proceed.</p>
                             </div>
                             
-                            <div class="mt-4" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-                                <form id="resetForm" th:action="${home + 'admin/reset-data'}" method="post">
+                            <div class="mt-4" th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
+                                <form id="resetForm" th:action="${home + 'data/reset'}" method="post">
                                     <div class="form-group">
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="confirmReset" required>
