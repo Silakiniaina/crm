@@ -29,4 +29,23 @@ public class DataImportUtil {
             }
         }
     }
+
+    public static String generateInsertQuery(Class<?> entityClass) {
+        if (!entityClass.isAnnotationPresent(Entity.class)) {
+            throw new IllegalArgumentException("Provided class is not an entity");
+        }
+    
+        String tableName = entityClass.getSimpleName().toLowerCase();
+        Field[] fields = entityClass.getDeclaredFields();
+    
+        String columnNames = Arrays.stream(fields)
+                .map(Field::getName)
+                .collect(Collectors.joining(", "));
+    
+        String valuePlaceholders = Arrays.stream(fields)
+                .map(f -> "?")
+                .collect(Collectors.joining(", "));
+    
+        return "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + valuePlaceholders + ")";
+    }
 }
