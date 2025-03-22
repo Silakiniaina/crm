@@ -36,6 +36,7 @@ public class DataImportController {
         this.importDataService = importDataService;
         this.tableEntityMap = new HashMap<>();
         tableEntityMap.put("roles", site.easy.to.build.crm.entity.Role.class);
+        tableEntityMap.put("employee", site.easy.to.build.crm.entity.Employee.class);
     }
     
     @PostMapping("/data/import")

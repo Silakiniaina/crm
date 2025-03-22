@@ -37,7 +37,7 @@ public class DataImportUtil {
             connection.commit(); 
             System.out.println("Data import successful");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
     }
     
@@ -87,15 +87,22 @@ public class DataImportUtil {
         return "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + valuePlaceholders + ")";
     }
 
-    private static Object convertValue(String value, Class<?> type) {
-        if (type == int.class || type == Integer.class) {
-            return Integer.parseInt(value);
-        } else if (type == double.class || type == Double.class) {
-            return Double.parseDouble(value);
-        } else if (type == boolean.class || type == Boolean.class) {
-            return Boolean.parseBoolean(value);
-        } else {
-            return value; // Default to String
+    private static Object convertValue(String value, Field f, CSVRecord c) throws Exception{
+        Class<?> type = f.getType();
+        try{
+            if (type == int.class || type == Integer.class) {
+                return Integer.parseInt(value);
+            } else if (type == double.class || type == Double.class) {
+                return Double.parseDouble(value);
+            } else if (type == boolean.class || type == Boolean.class) {
+                return Boolean.parseBoolean(value);
+            } else {
+                return value; 
+            }
+        }catch(NumberFormatException e){
+            throw new IllegalArgumentException("Failed to convert value: " + value + " to type: " + type.getName() +" on the column : "+f.getName()+" at the line : "+c.getRecordNumber());
+        }catch(Exception e){
+            throw e;
         }
     }
 
@@ -112,7 +119,7 @@ public class DataImportUtil {
             String csvValue = record.get(fieldName);
             String setterName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
             Method setter = entityClass.getMethod(setterName, field.getType());
-            Object convertedValue = convertValue(csvValue, field.getType());
+            Object convertedValue = convertValue(csvValue, field, record);
             setter.invoke(entity, convertedValue);
         }
         return entity;
