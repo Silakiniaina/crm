@@ -70,5 +70,5 @@ public class CustomerServiceImpl implements CustomerService {
         return budgets.stream()
             .mapToDouble(budget -> budget.getAmount())
             .sum();
-    }    
+    }   
 }

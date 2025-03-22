@@ -2,6 +2,7 @@ package site.easy.to.build.crm.service.customer;
 
 import org.checkerframework.checker.units.qual.C;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerBudget;
 
 import java.util.List;
 
