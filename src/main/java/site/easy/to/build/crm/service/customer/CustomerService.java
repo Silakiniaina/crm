@@ -23,4 +23,6 @@ public interface CustomerService {
 
     long countByUserId(int userId);
 
+    public double getTotalBudgetByCustomerId(int userId);
+
 }
