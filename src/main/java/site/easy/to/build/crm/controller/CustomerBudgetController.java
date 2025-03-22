@@ -55,6 +55,7 @@ public class CustomerBudgetController {
         
         model.addAttribute("customerBudgets", customer.getCustomerBudgets());
         model.addAttribute("customerId", customer.getCustomerId());
+        model.addAttribute("totalBudget", customerService.getTotalBudgetByCustomerId(customer));
         return "budget/customerBudget";
     }
 
@@ -126,5 +127,4 @@ public class CustomerBudgetController {
         redirectAttributes.addFlashAttribute("successMessage", "Budget created successfully!");
         return "redirect:/customers/" + customerId + "/budgets";
     }
-    
 }
