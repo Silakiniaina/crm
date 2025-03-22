@@ -62,13 +62,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public double getTotalBudgetByCustomerId(int customerId) {
-        Customer customer = findByCustomerId(customerId);
+    public double getTotalBudgetByCustomerId(Customer customer) {
         List<CustomerBudget> budgets = customer.getCustomerBudgets();
         if (budgets == null || budgets.isEmpty()) {
             return 0.0;
         }
-        
         return budgets.stream()
             .mapToDouble(budget -> budget.getAmount())
             .sum();
