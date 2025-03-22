@@ -19,7 +19,7 @@ public class CustomerBudgetController {
         this.customerService = customerService;
     }
     
-    @GetMapping("/customer/{id}/budgets")
+    @GetMapping("/customers/{id}/budgets")
     public String getCustomerBudgets(Model model, 
                                 @PathVariable("id") int customerId,
                                 RedirectAttributes redirectAttributes) {
