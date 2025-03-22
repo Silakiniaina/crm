@@ -4,4 +4,5 @@ import site.easy.to.build.crm.entity.CustomerBudget;
 
 public interface CustomerBudgetService {
     
+    public CustomerBudget addBudget(CustomerBudget customerBudget) throws Exception;
 }
