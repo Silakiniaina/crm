@@ -32,6 +32,7 @@ public class CustomerBudgetController {
         }
         
         model.addAttribute("customerBudgets", customer.getCustomerBudgets());
+        model.addAttribute("customerId", customer.getCustomerId());
         return "budget/customerBudget";
     }
 
