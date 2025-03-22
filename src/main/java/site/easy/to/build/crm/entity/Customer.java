@@ -74,7 +74,7 @@ public class Customer {
     @JsonIgnore
     private CustomerLoginInfo customerLoginInfo;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<CustomerBudget> customerBudgets;
 
