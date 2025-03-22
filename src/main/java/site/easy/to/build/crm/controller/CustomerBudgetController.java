@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerBudget;
 import site.easy.to.build.crm.service.customer.CustomerService;
 
 @Controller
@@ -36,4 +37,20 @@ public class CustomerBudgetController {
         return "budget/customerBudget";
     }
 
+    @GetMapping("/customers/{id}/budgets/add")
+    public String showCreateBudgetForm(@PathVariable("id") int customerId, Model model, RedirectAttributes redirectAttributes) {
+
+        Customer customer = customerService.findByCustomerId(customerId);
+        
+        if (customer == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", 
+                "Customer with ID " + customerId + " not found");
+            return "redirect:/error/404";  
+        }
+
+        model.addAttribute("customerBudget", new CustomerBudget());
+        model.addAttribute("customer", customer);
+        return "budget/addBudget";
+    }
+    
 }
