@@ -9,7 +9,7 @@ import jakarta.persistence.PersistenceContext;
 @Service
 public class DataFactoryServiceImpl implements DataFactoryService{
 
-@PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Transactional
