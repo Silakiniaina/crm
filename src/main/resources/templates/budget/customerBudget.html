@@ -10,8 +10,7 @@
       th:href="@{/css/dataTables.bootstrap4.css}">
 <link rel="stylesheet" type="text/css"
       th:href="@{/css/responsive.dataTables.min.css}">
-<link th:href="@{/css/login-register-lock.css}" rel="stylesheet">
-<link th:href="@{/css/jquery.toast.css}" rel="stylesheet">
+
 <!-- Custom CSS -->
 <link th:href="@{/css/style.min.css}" rel="stylesheet">
 <!-- page css -->
@@ -75,43 +74,55 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <div th:if="${bindingResult != null && bindingResult.hasFieldErrors('failedErrorMessage')}" class="alert alert-danger">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
-                                <h3 class="text-info"><i class="fa fa-exclamation-circle"></i> Not Allowed
-                                </h3><span th:text="${bindingResult.getFieldError('failedErrorMessage').defaultMessage}"></span>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="card-title">Customer Budgets</h4>
+                                <a th:href="@{/customers/{id}/budgets/add(id=${customerId})}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Budget
+                                </a>
                             </div>
-                            <h4 class="card-title">Customers</h4>
+                            <!-- flash attributes -->
+                            <div class="alerts-container mb-3">
+                                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <span th:text="${successMessage}"></span>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                
+                                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <span th:text="${errorMessage}"></span>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="card-title">Total Budget</h4>
+                                        <h3 class="text-primary" th:text="${#numbers.formatDecimal(totalBudget, 1, 2) + ' Ar'}"></h3>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive m-t-40">
                                 <table id="config-table" class="table display table-bordered table-striped no-wrap">
                                     <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Country</th>
-                                            <th>Budgets</th>
-                                            <th>Show Full Details</th>
-                                            <th th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">Delete</th>
-                                        </tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Amount</th>
+                                        <th>Created At</th>
+                                        <th>Created By</th>
+                                        <th>Customer</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:if="${customers != null}" th:each="customer : ${customers}">
-                                            <td th:text="${customer.customerId}"></td>
-                                            <td th:text="${customer.name}"></td>
-                                            <td th:text="${customer.email}"></td>
-                                            <td th:text="${customer.phone}"></td>
-                                            <td th:text="${customer.country}"></td>
-                                            <td><a th:href="${home + 'customers/' + customer.customerId + '/budgets'}">View budgets</a></td><td>
-                                            <td><a th:href="${home + 'employee/customer/' + customer.customerId}"><i class="fas fa-eye"></i></a></td>
-                                            <td th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')')}">
-                                                <form th:action="${home + 'employee/customer/delete-customer/' + customer.customerId}" method="post">
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="mdi mdi-delete"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
+                                    <tr th:if="${customerBudgets != null}" th:each="budget : ${customerBudgets}">
+                                        <td th:text="${budget.id}"></td>
+                                        <td th:text="${#numbers.formatDecimal(budget.amount, 1, 2)}"></td>
+                                        <td th:text="${budget.createdAt}"></td>
+                                        <td th:text="${budget.createdBy.username}"></td>
+                                        <td th:text="${budget.customer.name}"></td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -169,10 +180,7 @@
 <script th:src="@{/js/library/sticky-kit.min.js}"></script>
 <script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript">></script>
 <!--Custom JavaScript -->
-
 <script th:src="@{/js/library/custom.min.js}" type="text/javascript">></script>
-<script th:src="@{/js/library/jquery.toast.js}"></script>
-<script th:src="@{/js/library/toastr.js}"></script>
 <!-- Editable -->
 <script th:src="@{/js/library/jquery.dataTables.min.js}"></script>
 <script th:src="@{/js/library/dataTables.responsive.min.js}"></script>
