@@ -3,8 +3,11 @@ package site.easy.to.build.crm.service.customer;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import jakarta.persistence.EntityNotFoundException;
 import site.easy.to.build.crm.repository.CustomerRepository;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerBudget;
 
 import java.util.List;
 
@@ -58,5 +61,16 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.countByUserId(userId);
     }
 
-    
+    @Override
+    public double getTotalBudgetByCustomerId(int customerId) {
+        Customer customer = findByCustomerId(customerId);
+        List<CustomerBudget> budgets = customer.getCustomerBudgets();
+        if (budgets == null || budgets.isEmpty()) {
+            return 0.0;
+        }
+        
+        return budgets.stream()
+            .mapToDouble(budget -> budget.getAmount())
+            .sum();
+    }    
 }
