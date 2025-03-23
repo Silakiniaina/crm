@@ -26,7 +26,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense addExpense(Expense expense) throws Exception {
+    public Expense addExpense(Expense expense) throws BudgetOverrunException,Exception {
         if (expense == null) {
             throw new Exception("Expense cannot be null");
         }
@@ -42,9 +42,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     
             // If a customer ID is found, check expenses against budget
             if ( customer != null) {
-                BigDecimal totalExpenses = expenseRepository.findTotalExpenseByCustomerId(customer.getCustomerId());
-                double totalExpenseAmount = totalExpenses.doubleValue();
-    
+                double totalExpenseAmount = this.getTotalExpenseByCustomerId(customer.getCustomerId().intValue()) + expense.getAmount().doubleValue();
                 double totalBudget = customerService.getTotalBudgetByCustomerId(customer);
                 
                 System.out.println("Expenses : "+totalExpenseAmount+" - total budgets : "+totalBudget);
@@ -54,8 +52,10 @@ public class ExpenseServiceImpl implements ExpenseService {
                 }
             }
             return expenseRepository.save(expense);
+        } catch (BudgetOverrunException e) {
+            throw e;
         } catch (Exception e) {
-            throw new Exception("Failed to save expense: " + e.getMessage());
+            throw new Exception("Error adding expense: " + e.getMessage());
         }
     }
 
