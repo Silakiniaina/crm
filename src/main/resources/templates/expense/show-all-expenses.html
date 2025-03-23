@@ -84,9 +84,9 @@
                                                 <label for="type">Type: </label>
                                                 <select class="form-control" id="type" name="type">
                                                     <option value="">All Types</option>
-                                                    <option value="1" th:selected="${param.type == '1'}">Ticket</option>
-                                                    <option value="2" th:selected="${param.type == '2'}">Lead</option>
-                                                </select>
+                                                    <option value="1" th:selected="${#strings.equals(param.type, '1')}">Lead</option>
+                                                    <option value="2" th:selected="${#strings.equals(param.type, '2')}">Ticket</option>
+                                                </select>                                                
                                             </div>
                                             <div class="col-auto">
                                                 <label for="id">ID:</label>
@@ -223,6 +223,7 @@
         $('#config-table').DataTable({
             responsive: true
         });
+
         
         // Dynamic button state management
         function updateAddButtonState() {
