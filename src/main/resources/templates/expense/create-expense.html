@@ -58,7 +58,6 @@
                         
                         <div class="card">
                             <div class="card-body">
-                                <p th:text="${budgetOverrun}"></p>
                                 <h4 class="card-title">Add New Expense</h4>
                                 <form th:object="${expense}" th:action="@{/expenses}" method="post">
                                     <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
@@ -126,9 +125,18 @@
                 </div>
                 <div class="modal-body">
                     <p th:text="${errorMessage}"></p>
+                    <form th:action="@{/expenses/validate-overrun}" method="post" id="overrunForm">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                        <input type="hidden" name="expenseType" th:value="${expense.expenseType}" />
+                        <input type="hidden" name="label" th:value="${expense.label}" />
+                        <input type="hidden" name="description" th:value="${expense.description}" />
+                        <input type="hidden" name="amount" th:value="${expense.amount}" />
+                        <input type="hidden" name="lead.leadId" th:value="${expense.lead?.leadId}" th:if="${expense.lead != null}" />
+                        <input type="hidden" name="ticket.ticketId" th:value="${expense.ticket?.ticketId}" th:if="${expense.ticket != null}" />
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    <button type="submit" form="overrunForm" class="btn btn-primary">OK</button>
                     <a th:href="@{/expenses}" class="btn btn-secondary">Return</a>
                 </div>
             </div>
