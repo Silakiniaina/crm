@@ -517,3 +517,19 @@ CREATE  TABLE IF NOT EXISTS `customer_budget` (
   CONSTRAINT `fk_customer_budget_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE NO ACTION ON UPDATE NO ACTION
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+
+CREATE  TABLE IF NOT EXISTS `expenses` ( 
+	`id`                   INT    NOT NULL AUTO_INCREMENT  PRIMARY KEY,
+	`created_at`           DATE  DEFAULT (curdate())  NOT NULL   ,
+	`label`                VARCHAR(200)    NOT NULL   ,
+	`description`         TEXT       ,
+	`amount`               DECIMAL(18,2)  DEFAULT (0)  NOT NULL   ,
+	`expense_type`         INT  DEFAULT (0)  NOT NULL   ,
+	`lead_id`              INT UNSIGNED      ,
+	`ticket_id`            INT UNSIGNED      ,
+	`created_by`           INT ,
+  CONSTRAINT `fk_expenses_trigger_lead` FOREIGN KEY ( `lead_id` ) REFERENCES `trigger_lead`( `lead_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_expenses_trigger_ticket` FOREIGN KEY ( `ticket_id` ) REFERENCES `trigger_ticket`( `ticket_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_expenses_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE NO ACTION ON UPDATE NO ACTION      
+ ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
