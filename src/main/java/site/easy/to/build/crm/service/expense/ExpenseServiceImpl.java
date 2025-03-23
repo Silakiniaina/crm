@@ -48,4 +48,10 @@ public class ExpenseServiceImpl implements ExpenseService {
             return expenseRepository.findAll();
         }
     }
+
+    @Override
+    public double getTotalExpenseByCustomerId(int customerId) {
+        BigDecimal total = expenseRepository.findTotalExpenseByCustomerId(customerId);
+        return total != null ? total.doubleValue() : 0.0;
+    }
 }
