@@ -15,6 +15,7 @@ import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.User;
 import site.easy.to.build.crm.exception.BudgetOverrunException;
+import site.easy.to.build.crm.exception.AlertThresholdExceedExeption;
 import site.easy.to.build.crm.service.expense.ExpenseServiceImpl;
 import site.easy.to.build.crm.service.lead.LeadServiceImpl;
 import site.easy.to.build.crm.service.ticket.TicketServiceImpl;
@@ -92,18 +93,21 @@ public class ExpenseController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("type", type);
             model.addAttribute("id", id);
-            model.addAttribute("budgetOverrun", false); 
+            model.addAttribute("budgetOverrun", false);
             return "expense/create-expense";
         }
+    
         expense.setExpenseType(type);
         int loggedInUserId = authenticationUtils.getLoggedInUserId(authentication);
         if (loggedInUserId == -1) {
             redirectAttributes.addFlashAttribute("errorMessage", "No logged-in user found. Please log in again.");
-            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
+            redirectAttributes.addFlashAttribute("budgetOverrun", false);
             return "redirect:/login";
         }
+    
         User createdBy = userService.findById(loggedInUserId);
         expense.setCreatedBy(createdBy);
+    
         if (id != null) {
             if (type == 1) {
                 Lead lead = leadService.findByLeadId(id);
@@ -117,10 +121,14 @@ public class ExpenseController {
                 }
             }
         }
+    
         try {
-            expenseService.addExpense(expense, false);
+            Expense saved = expenseService.addExpense(expense, false);
             redirectAttributes.addFlashAttribute("successMessage", "Expense saved successfully.");
-            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
+            redirectAttributes.addFlashAttribute("budgetOverrun", false);
+            if (saved != null) {
+                redirectAttributes.addFlashAttribute("thresholdExceededMessage", "You have exceeded the threshold budget alert");
+            }
             if (type == 1 && id != null) {
                 return "redirect:/expenses/add?type=1&id=" + id;
             } else if (type == 2 && id != null) {
@@ -130,12 +138,12 @@ public class ExpenseController {
             }
         } catch (BudgetOverrunException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            redirectAttributes.addFlashAttribute("budgetOverrun", true); 
-            redirectAttributes.addFlashAttribute("expense", expense); 
+            redirectAttributes.addFlashAttribute("budgetOverrun", true);
+            redirectAttributes.addFlashAttribute("expense", expense);
             return "redirect:/expenses/add?type=" + type + "&id=" + id;
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to save expense. Please try again. " + e.getMessage());
-            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
+            redirectAttributes.addFlashAttribute("budgetOverrun", false);
             return "redirect:/expenses/add?type=" + type + "&id=" + id;
         }
     }

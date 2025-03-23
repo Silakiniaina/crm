@@ -533,3 +533,9 @@ CREATE  TABLE IF NOT EXISTS `expenses` (
   CONSTRAINT `fk_expenses_trigger_ticket` FOREIGN KEY ( `ticket_id` ) REFERENCES `trigger_ticket`( `ticket_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_expenses_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE NO ACTION ON UPDATE NO ACTION      
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+ CREATE  TABLE IF NOT EXISTS `budget_alert_threshold` ( 
+	`id` INT    NOT NULL AUTO_INCREMENT   PRIMARY KEY,
+	`threshold` DECIMAL(10,2)  DEFAULT (0.80)  NOT NULL   
+ ) engine=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
