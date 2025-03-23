@@ -74,36 +74,83 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Tickets</h4>
+                            <h4 class="card-title">Expenses</h4>
+                            <!-- Filter controls -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <form id="filterForm" method="get" th:action="@{/expenses}">
+                                        <div class="form-row align-items-center">
+                                            <div class="col-auto">
+                                                <label for="type">Type: </label>
+                                                <select class="form-control" id="type" name="type">
+                                                    <option value="">All Types</option>
+                                                    <option value="1" th:selected="${#strings.equals(param.type, '1')}">Lead</option>
+                                                    <option value="2" th:selected="${#strings.equals(param.type, '2')}">Ticket</option>
+                                                </select>                                                
+                                            </div>
+                                            <div class="col-auto">
+                                                <label for="id">ID:</label>
+                                                <input type="text" class="form-control" id="id" name="id" 
+                                                       th:value="${param.id}" placeholder="Lead/Ticket ID">
+                                            </div>
+                                            <div class="col-auto align-self-end">
+                                                <button type="submit" class="btn btn-primary mb-2">Filter</button>
+                                                <a th:href="@{/expenses}" class="btn btn-secondary mb-2">Reset</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <!-- Replace the problematic "New Expense" button code (around line 106) with this: -->
+                                <div class="col-md-6 text-right">
+                                    <a id="addExpenseBtn" 
+                                    th:class="${param.type != null and param.type != '' and param.id != null and param.id != '' ? 'btn btn-info' : 'btn btn-info disabled'}"
+                                    th:href="@{/expenses/add(type=${param.type}, id=${param.id})}"
+                                    class="btn btn-info">
+                                        <i class="fa fa-plus"></i> New Expense
+                                    </a>
+                                </div>
+                            </div>
                             <div class="table-responsive m-t-40">
                                 <table id="config-table" class="table display table-bordered table-striped no-wrap">
                                     <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Subject</th>
-                                        <th>priority</th>
-                                        <th>Status</th>
-                                        <th>Customer</th>
-                                        <th>Assigned Employee</th>
-                                        <th>Details</th>
-                                        <th>Expenses</th>
+                                        <th>Date</th>
+                                        <th>Label</th>
+                                        <th>Amount</th>
+                                        <th>Type</th>
+                                        <th>Related To</th>
+                                        <th>Created By</th>
                                         <th>Edit</th>
                                         <th>Delete</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:if="${tickets != null}" th:each="ticket : ${tickets}">
-                                        <td th:text="${ticket.ticketId}"></td>
-                                        <td th:text="${ticket.subject}"></td>
-                                        <td th:text="${ticket.priority}"></td>
-                                        <td th:text="${ticket.status}"></td>
-                                        <td th:text="${ticket.customer.name}"></td>
-                                        <td th:text="${ticket.employee.username}"></td>
-                                        <td><a th:href="${home + 'employee/ticket/show-ticket/' + ticket.ticketId}"><i class="fas fa-eye"></i></a></td>
-                                        <td><a th:href="${home + 'expenses?type=2&id=' + ticket.ticketId}"><i class="fas fa-money-bill"></a></td>
-                                        <td><a th:href="${home + 'employee/ticket/update-ticket/' + ticket.ticketId}"><i class="fas fa-edit"></i></a></td>
+                                    <tr th:if="${expenses != null}" th:each="expense : ${expenses}">
+                                        <td th:text="${expense.id}"></td>
+                                        <td th:text="${#temporals.format(expense.createdAt, 'yyyy-MM-dd')}"></td>
+                                        <td th:text="${expense.label}"></td>
+                                        <td th:text="${#numbers.formatCurrency(expense.amount)}"></td>
                                         <td>
-                                            <form th:action="${home + 'employee/ticket/delete-ticket/' + ticket.ticketId}" method="post">
+                                            <span th:switch="${expense.expenseType}">
+                                                <span th:case="1">Ticket</span>
+                                                <span th:case="2">Lead</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${expense.lead != null}">
+                                                Lead: <a th:href="${home + 'employee/lead/show/' + expense.lead.leadId}" 
+                                                        th:text="${expense.lead.name}"></a>
+                                            </span>
+                                            <span th:if="${expense.ticket != null}">
+                                                Ticket: <a th:href="${home + 'employee/ticket/show/' + expense.ticket.ticketId}" 
+                                                         th:text="${expense.ticket.subject}"></a>
+                                            </span>
+                                        </td>
+                                        <td th:text="${expense.createdBy != null ? expense.createdBy.username : 'N/A'}"></td>
+                                        <td><a th:href="${home + 'employee/expense/update/' + expense.id}"><i class="fas fa-edit"></i></a></td>
+                                        <td>
+                                            <form th:action="${home + 'employee/expense/delete/' + expense.id}" method="post">
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="mdi mdi-delete"></i>
                                                 </button>
@@ -172,9 +219,43 @@
 <script th:src="@{/js/library/jquery.dataTables.min.js}"></script>
 <script th:src="@{/js/library/dataTables.responsive.min.js}"></script>
 <script>
-    $('#config-table').DataTable({
-        responsive: true
+    $(document).ready(function() {
+        $('#config-table').DataTable({
+            responsive: true
+        });
+
+        
+        // Dynamic button state management
+        function updateAddButtonState() {
+            var typeValue = $('#type').val();
+            var idValue = $('#id').val();
+            
+            if (typeValue && idValue) {
+                // Both fields have values
+                $('#addExpenseBtn').removeClass('disabled');
+                $('#addExpenseBtn').attr('href', '/expenses/add?type=' + typeValue + '&id=' + idValue);
+            } else {
+                // At least one field is empty
+                $('#addExpenseBtn').addClass('disabled');
+                $('#addExpenseBtn').attr('href', '#');
+            }
+        }
+        
+        // Initial check
+        updateAddButtonState();
+        
+        // Add listeners to update button state when filter values change
+        $('#type, #id').on('change keyup', function() {
+            updateAddButtonState();
+        });
     });
 </script>
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
 </body>
 </html>

@@ -81,6 +81,9 @@ public class User {
     @JsonIgnoreProperties("user")
     private UserProfile userProfile;
 
+    @OneToMany(mappedBy = "createdBy")
+    private List<Expense> expenses;
+
 
 
     public User() {
