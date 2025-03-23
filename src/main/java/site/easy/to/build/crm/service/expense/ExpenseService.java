@@ -6,7 +6,11 @@ import site.easy.to.build.crm.entity.Expense;
 
 public interface ExpenseService {
     
-    public Expense addExpense(Expense expense) throws Exception;
+    public Expense addExpense(Expense expense, boolean isValidated) throws Exception;
 
     public List<Expense> findExpensesByFilters(Integer type, Integer id);
+
+    public double getTotalExpenseByCustomerId(int customerId);
+
+    public void validateBudgetOverrun(Expense expense) throws Exception;
 }

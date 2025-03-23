@@ -1,6 +1,7 @@
 package site.easy.to.build.crm.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.User;
+import site.easy.to.build.crm.exception.BudgetOverrunException;
 import site.easy.to.build.crm.service.expense.ExpenseServiceImpl;
 import site.easy.to.build.crm.service.lead.LeadServiceImpl;
 import site.easy.to.build.crm.service.ticket.TicketServiceImpl;
@@ -34,7 +36,7 @@ public class ExpenseController {
     private final AuthenticationUtils authenticationUtils;
 
     @Autowired
-    public ExpenseController(AuthenticationUtils auth,ExpenseServiceImpl expenseService,LeadServiceImpl leadService,TicketServiceImpl ticketService,UserServiceImpl userService) {
+    public ExpenseController(AuthenticationUtils auth, ExpenseServiceImpl expenseService, LeadServiceImpl leadService, TicketServiceImpl ticketService, UserServiceImpl userService) {
         this.expenseService = expenseService;
         this.leadService = leadService;
         this.ticketService = ticketService;
@@ -47,12 +49,11 @@ public class ExpenseController {
             @RequestParam(required = false) Integer type,
             @RequestParam(required = false) Integer id,
             Model model) {
-        
+
         List<Expense> expenses = expenseService.findExpensesByFilters(type, id);
         model.addAttribute("expenses", expenses);
         model.addAttribute("type", type);
 
-        
         return "expense/show-all-expenses";
     }
 
@@ -61,18 +62,24 @@ public class ExpenseController {
             @RequestParam("type") Integer type,
             @RequestParam(value = "id", required = false) Integer id,
             Model model) {
-        
-        Expense expense = new Expense();
-        expense.setCreatedAt(LocalDate.now());
-        expense.setAmount(BigDecimal.ZERO);
-        expense.setExpenseType(type);
+        Object budgetOverrunObj = model.asMap().get("budgetOverrun");
+        Boolean budgetOverrun = budgetOverrunObj instanceof Boolean ? (Boolean) budgetOverrunObj : false;
+        Object redirectedExpenseObj = model.asMap().get("expense");
+        Expense expense = redirectedExpenseObj instanceof Expense ? (Expense) redirectedExpenseObj : new Expense();
+        if (redirectedExpenseObj == null) {
+            expense.setCreatedAt(LocalDate.now());
+            expense.setAmount(BigDecimal.ZERO);
+            expense.setExpenseType(type);
+        }
         model.addAttribute("expense", expense);
         model.addAttribute("type", type);
         model.addAttribute("id", id);
+        model.addAttribute("budgetOverrun", budgetOverrun);
+
         return "expense/create-expense";
     }
-
-    @PostMapping 
+    
+    @PostMapping
     public String saveExpense(
             @RequestParam("type") Integer type,
             @RequestParam(value = "id", required = false) Integer id,
@@ -81,53 +88,99 @@ public class ExpenseController {
             Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
-        
+    
         if (bindingResult.hasErrors()) {
             model.addAttribute("type", type);
             model.addAttribute("id", id);
-            return "expenses/add";
+            model.addAttribute("budgetOverrun", false); 
+            return "expense/create-expense";
         }
-        
         expense.setExpenseType(type);
-        
         int loggedInUserId = authenticationUtils.getLoggedInUserId(authentication);
         if (loggedInUserId == -1) {
             redirectAttributes.addFlashAttribute("errorMessage", "No logged-in user found. Please log in again.");
+            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
             return "redirect:/login";
         }
-
-        // Fetch the logged-in user
         User createdBy = userService.findById(loggedInUserId);
         expense.setCreatedBy(createdBy);
-        
         if (id != null) {
-            if (type == 1) { 
+            if (type == 1) {
                 Lead lead = leadService.findByLeadId(id);
                 if (lead != null) {
                     expense.setLead(lead);
                 }
-            } else if (type == 2) { 
+            } else if (type == 2) {
                 Ticket ticket = ticketService.findByTicketId(id);
                 if (ticket != null) {
                     expense.setTicket(ticket);
                 }
             }
         }
-
-        try{
-            expenseService.addExpense(expense);
+        try {
+            expenseService.addExpense(expense, false);
             redirectAttributes.addFlashAttribute("successMessage", "Expense saved successfully.");
+            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
             if (type == 1 && id != null) {
                 return "redirect:/expenses/add?type=1&id=" + id;
             } else if (type == 2 && id != null) {
                 return "redirect:/expenses/add?type=2&id=" + id;
             } else {
-                return "redirect:/expenses/add"; 
+                return "redirect:/expenses/add?type=" + type + "&id=" + id;
             }
-        }catch(Exception e){
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save expense. Please try again.");
-            return "redirect:/expenses/add";
+        } catch (BudgetOverrunException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", true); 
+            redirectAttributes.addFlashAttribute("expense", expense); 
+            return "redirect:/expenses/add?type=" + type + "&id=" + id;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save expense. Please try again. " + e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", false); 
+            return "redirect:/expenses/add?type=" + type + "&id=" + id;
         }
-        
+    }
+
+    @PostMapping("/validate-overrun")
+    public String validateExpenseOverrun(
+            @ModelAttribute("expense") @Valid Expense expense,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid expense data.");
+            return buildRedirectUrl(expense);
+        }
+
+        try {
+            expenseService.validateBudgetOverrun(expense);
+            redirectAttributes.addFlashAttribute("successMessage", "Expense is within budget");
+        } catch (BudgetOverrunException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", true);
+            redirectAttributes.addFlashAttribute("expense", expense); 
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to validate expense: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", false);
+        }
+
+        return buildRedirectUrl(expense);
+    }
+
+    private String buildRedirectUrl(Expense expense) {
+        Integer type = expense.getExpenseType();
+        Integer id = null;
+
+        if (type != null) {
+            if (type == 1 && expense.getLead() != null) {
+                id = expense.getLead().getLeadId();
+            } else if (type == 2 && expense.getTicket() != null) {
+                id = expense.getTicket().getTicketId();
+            }
+        }
+
+        String redirectType = type != null ? type.toString() : "1";
+        String redirectId = id != null ? "&id=" + id : "";
+
+        return "redirect:/expenses/add?type=" + redirectType + redirectId;
     }
 }
