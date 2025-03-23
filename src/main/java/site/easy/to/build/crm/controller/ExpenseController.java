@@ -1,6 +1,7 @@
 package site.easy.to.build.crm.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -117,7 +118,7 @@ public class ExpenseController {
             }
         }
         try {
-            expenseService.addExpense(expense);
+            expenseService.addExpense(expense, false);
             redirectAttributes.addFlashAttribute("successMessage", "Expense saved successfully.");
             redirectAttributes.addFlashAttribute("budgetOverrun", false); 
             if (type == 1 && id != null) {
@@ -137,5 +138,23 @@ public class ExpenseController {
             redirectAttributes.addFlashAttribute("budgetOverrun", false); 
             return "redirect:/expenses/add?type=" + type + "&id=" + id;
         }
+    }
+
+    private String buildRedirectUrl(Expense expense) {
+        Integer type = expense.getExpenseType();
+        Integer id = null;
+
+        if (type != null) {
+            if (type == 1 && expense.getLead() != null) {
+                id = expense.getLead().getLeadId();
+            } else if (type == 2 && expense.getTicket() != null) {
+                id = expense.getTicket().getTicketId();
+            }
+        }
+
+        String redirectType = type != null ? type.toString() : "1";
+        String redirectId = id != null ? "&id=" + id : "";
+
+        return "redirect:/expenses/add?type=" + redirectType + redirectId;
     }
 }
