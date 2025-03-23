@@ -8,4 +8,6 @@ import site.easy.to.build.crm.entity.Expense;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
     
+    public Expense addExpense(Expense expense, int type) throws Exception;
+
 }
