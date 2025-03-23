@@ -60,6 +60,9 @@ public class Lead {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "lead")
+    private List<Expense> expenses;
+
     public Lead() {
     }
 
