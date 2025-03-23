@@ -11,4 +11,6 @@ public interface ExpenseService {
     public List<Expense> findExpensesByFilters(Integer type, Integer id);
 
     public double getTotalExpenseByCustomerId(int customerId);
+
+    public void validateBudgetOverrun(Expense expense) throws Exception;
 }
