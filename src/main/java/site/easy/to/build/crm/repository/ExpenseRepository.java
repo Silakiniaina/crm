@@ -21,8 +21,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
     @Query("SELECT e FROM Expense e WHERE e.expenseType = :type AND (e.lead.leadId = :id OR e.ticket.ticketId = :id)")
     List<Expense> findByExpenseTypeAndRelatedId(@Param("type") Integer type, @Param("id") Integer id);
 
-    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e " +
-           "WHERE (e.lead IS NOT NULL AND e.lead.customer.id = :customerId) " +
-           "OR (e.ticket IS NOT NULL AND e.ticket.customer.id = :customerId)")
-    BigDecimal findTotalExpenseByCustomerId(@Param("customerId") int customerId);
+    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e WHERE e.lead.customer.customerId = :cusId")
+    BigDecimal findTotalLeadExpenseByCustomerId(@Param("cusId") int cusId);
+
+    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e WHERE e.ticket.customer.customerId = :cusId")
+    BigDecimal findTotalTicketExpenseByCustomerId(@Param("cusId") int cusId);
 }
