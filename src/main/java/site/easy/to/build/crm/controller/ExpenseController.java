@@ -140,6 +140,32 @@ public class ExpenseController {
         }
     }
 
+    @PostMapping("/validate-overrun")
+    public String validateExpenseOverrun(
+            @ModelAttribute("expense") @Valid Expense expense,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid expense data.");
+            return buildRedirectUrl(expense);
+        }
+
+        try {
+            expenseService.validateBudgetOverrun(expense);
+            redirectAttributes.addFlashAttribute("successMessage", "Expense is within budget");
+        } catch (BudgetOverrunException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", true);
+            redirectAttributes.addFlashAttribute("expense", expense); 
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to validate expense: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("budgetOverrun", false);
+        }
+
+        return buildRedirectUrl(expense);
+    }
+
     private String buildRedirectUrl(Expense expense) {
         Integer type = expense.getExpenseType();
         Integer id = null;
