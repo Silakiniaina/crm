@@ -9,4 +9,6 @@ public interface ExpenseService {
     public Expense addExpense(Expense expense) throws Exception;
 
     public List<Expense> findExpensesByFilters(Integer type, Integer id);
+
+    public double getTotalExpenseByCustomerId(int customerId);
 }
