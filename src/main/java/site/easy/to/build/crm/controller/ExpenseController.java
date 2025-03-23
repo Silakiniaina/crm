@@ -21,6 +21,7 @@ import site.easy.to.build.crm.util.AuthenticationUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/expenses")
@@ -39,6 +40,20 @@ public class ExpenseController {
         this.ticketService = ticketService;
         this.userService = userService;
         this.authenticationUtils = auth;
+    }
+
+    @GetMapping
+    public String getAllExpenses(
+            @RequestParam(required = false) Integer type,
+            @RequestParam(required = false) Integer id,
+            Model model) {
+        
+        List<Expense> expenses = expenseService.findExpensesByFilters(type, id);
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("type", type);
+
+        
+        return "expense/show-all-expenses";
     }
 
     @GetMapping("/add")
@@ -105,7 +120,7 @@ public class ExpenseController {
             if (type == 1 && id != null) {
                 return "redirect:/expenses/add?type=1&id=" + id;
             } else if (type == 2 && id != null) {
-                return "redirect:/expenses/add";
+                return "redirect:/expenses/add?type=2&id=" + id;
             } else {
                 return "redirect:/expenses/add"; 
             }
