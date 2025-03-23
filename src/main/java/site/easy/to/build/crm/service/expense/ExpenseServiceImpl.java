@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerBudget;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.exception.BudgetOverrunException;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.service.customer.CustomerServiceImpl;
@@ -26,7 +29,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public Expense addExpense(Expense expense) throws BudgetOverrunException,Exception {
+    public Expense addExpense(Expense expense, boolean isValidated) throws BudgetOverrunException,Exception {
         if (expense == null) {
             throw new Exception("Expense cannot be null");
         }
@@ -41,7 +44,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             }
     
             // If a customer ID is found, check expenses against budget
-            if ( customer != null) {
+            if ( customer != null && !isValidated) {
                 double totalExpenseAmount = this.getTotalExpenseByCustomerId(customer.getCustomerId().intValue()) + expense.getAmount().doubleValue();
                 double totalBudget = customerService.getTotalBudgetByCustomerId(customer);
                 
@@ -62,16 +65,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public List<Expense> findExpensesByFilters(Integer type, Integer id) {
         if (type != null && id != null) {
-            // Both filters are provided
             return expenseRepository.findByExpenseTypeAndRelatedId(type, id);
         } else if (type != null) {
-            // Only type filter is provided
             return expenseRepository.findByExpenseType(type);
         } else if (id != null) {
-            // Only id filter is provided
             return expenseRepository.findByRelatedId(id);
         } else {
-            // No filters, return all expenses
             return expenseRepository.findAll();
         }
     }
@@ -85,7 +84,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public void validateBudgetOverrun(Expense expense) throws Exception {
-        // TODO Auto-generated method stub
-        
+        addExpense(expense, true);
     }
 }
