@@ -13,4 +13,6 @@ public interface ExpenseService {
     public double getTotalExpenseByCustomerId(int customerId);
 
     public void validateBudgetOverrun(Expense expense) throws Exception;
+
+    public Expense findById(int id);
 }
