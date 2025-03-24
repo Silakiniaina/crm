@@ -86,4 +86,9 @@ public class ExpenseServiceImpl implements ExpenseService {
     public void validateBudgetOverrun(Expense expense) throws Exception {
         addExpense(expense, true);
     }
+
+    @Override
+    public Expense findById(int id) {
+        return expenseRepository.findById(id).orElse(null);
+    }
 }
