@@ -69,4 +69,21 @@ public class ApiController {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching expense", (T) e.getMessage());
         }
     }
+
+    @PostMapping("/expenses/update")
+    public <T> ResponseEntity<Response<T>> updateExpenseAmount(
+            @RequestParam("id") int id,
+            @RequestParam("amount") BigDecimal amount) {
+        try {
+            Expense expense = expenseService.findById(id);
+            if (expense == null) {
+                throw new IllegalArgumentException("Expense not found with ID: " + id);
+            }
+            expense.setAmount(amount);
+            expenseService.addExpense(expense,false);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense amount updated successfully", (T) expense);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while updating expense", (T) e.getMessage());
+        }
+    }
 }
