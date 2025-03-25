@@ -103,4 +103,24 @@ public class ApiController {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching threshold", (T) e.getMessage());
         }
     }
+
+    @PostMapping("/threshold")
+    public <T> ResponseEntity<Response<T>> updateThreshold(
+            @RequestParam("id") int id,
+            @RequestParam("threshold") double threshold) {
+        try {
+            BudgetAlertThreshold existingThreshold = thresholdService.getThresholdObject();
+            if (existingThreshold == null && id == 0) {
+                // Create new if none exists and id is 0 (new entry)
+                existingThreshold = new BudgetAlertThreshold();
+            } else if (existingThreshold == null || existingThreshold.getId() != id) {
+                throw new IllegalArgumentException("Threshold with ID " + id + " not found");
+            }
+            existingThreshold.setThreshold(threshold);
+            thresholdService.save(existingThreshold);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Threshold updated successfully", (T) existingThreshold);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while updating threshold", (T) e.getMessage());
+        }
+    }
 }
