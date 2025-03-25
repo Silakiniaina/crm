@@ -8,11 +8,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public abstract class DataImport {
     
     private List<String> errors;
     private boolean valid;
     private String fileName;
+
+    public DataImport() {
+        this.errors = new ArrayList<>();
+        this.valid = true;
+    }
 
     public boolean validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
