@@ -77,5 +77,6 @@ public abstract class DataImport {
     /* Abstract */
 
     public abstract List<String> getValidStatus();
+    public abstract void checkIntegrity();
 
 }
