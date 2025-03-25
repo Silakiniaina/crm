@@ -35,6 +35,7 @@ public class ApiTotalDataController {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping("/details")
     public <T> ResponseEntity<Response<T>> getTotalDataDetails(@RequestParam("type") int type) {
         try {
