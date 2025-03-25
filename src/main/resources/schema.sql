@@ -280,9 +280,9 @@ CREATE TABLE IF NOT EXISTS `trigger_ticket` (
   KEY `fk_ticket_customer` (`customer_id`),
   KEY `fk_ticket_manager` (`manager_id`),
   KEY `fk_ticket_employee` (`employee_id`),
-  CONSTRAINT `fk_ticket_customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`),
-  CONSTRAINT `fk_ticket_employee` FOREIGN KEY (`employee_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `fk_ticket_manager` FOREIGN KEY (`manager_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_ticket_customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ticket_employee` FOREIGN KEY (`employee_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ticket_manager` FOREIGN KEY (`manager_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
