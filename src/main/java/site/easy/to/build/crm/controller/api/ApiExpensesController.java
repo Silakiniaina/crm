@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +35,26 @@ public class ApiExpensesController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense retrieved successfully", (T)expense);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while fetching expense", (T)e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @PutMapping("/{id}")
+    public <T> ResponseEntity<Response<T>> updateExpense(
+            @PathVariable("id") int id,
+            @RequestBody Expense updatedExpense) {
+        try {
+            Expense existingExpense = expenseService.findById(id);
+            if (existingExpense == null) {
+                return ResponseUtil.sendResponse(HttpStatus.NOT_FOUND, false, "Expense not found", null);
+            }
+            
+            existingExpense.setAmount(updatedExpense.getAmount());
+            expenseService.addExpense(existingExpense, false);
+            
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense updated successfully", (T)existingExpense);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while updating expense", (T)e.getMessage());
         }
     }
 }

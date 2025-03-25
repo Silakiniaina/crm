@@ -28,32 +28,11 @@ import site.easy.to.build.crm.service.expense.ExpenseServiceImpl;
 @RequestMapping("/api")
 public class ApiController {
 
-    private final TotalDataService totalDataService;
-    private final ExpenseServiceImpl expenseService;
     private final BudgetAlertThresholdServiceImpl thresholdService;
 
     @Autowired
-    public ApiController(BudgetAlertThresholdServiceImpl thres,ExpenseServiceImpl exp,TotalDataService totalDataService) {
-        this.totalDataService = totalDataService;
-        this.expenseService = exp;
+    public ApiController(BudgetAlertThresholdServiceImpl thres) {
         this.thresholdService = thres;
-    }
-
-    @PostMapping("/expenses/update")
-    public <T> ResponseEntity<Response<T>> updateExpenseAmount(
-            @RequestParam("id") int id,
-            @RequestParam("amount") BigDecimal amount) {
-        try {
-            Expense expense = expenseService.findById(id);
-            if (expense == null) {
-                throw new IllegalArgumentException("Expense not found with ID: " + id);
-            }
-            expense.setAmount(amount);
-            expenseService.addExpense(expense,false);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense amount updated successfully", (T) expense);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while updating expense", (T) e.getMessage());
-        }
     }
 
 @GetMapping("/threshold")
