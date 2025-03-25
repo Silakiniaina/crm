@@ -25,62 +25,91 @@ public abstract class DataImport {
     }
 
     public boolean validateEmail(String email) {
+        // Check for null or empty
         if (email == null || email.trim().isEmpty()) {
+            errors.add("Email cannot be null or empty");
+            valid = false;
             return false;
         }
 
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return Pattern.compile(emailRegex).matcher(email).matches();
+        if (!Pattern.compile(emailRegex).matcher(email).matches()) {
+            errors.add("Invalid email format: " + email);
+            valid = false;
+            return false;
+        }
+
+        return true;
     }
 
     public boolean validateDate(String date) {
         if (date == null || date.trim().isEmpty()) {
+            errors.add("Date cannot be null or empty");
+            valid = false;
             return false;
         }
 
-        try {
-            List<String> dateFormats = Arrays.asList(
-                "yyyy-MM-dd",
-                "MM/dd/yyyy",
-                "dd-MM-yyyy",
-                "yyyy/MM/dd"
-            );
+        List<String> dateFormats = Arrays.asList(
+            "yyyy-MM-dd",
+            "MM/dd/yyyy",
+            "dd-MM-yyyy",
+            "yyyy/MM/dd"
+        );
 
-            for (String format : dateFormats) {
-                try {
-                    LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
-                    return true;
-                } catch (DateTimeParseException e) {
-                    // Continue to next format
-                }
+        for (String format : dateFormats) {
+            try {
+                LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
+                return true;
+            } catch (DateTimeParseException e) {
+                
             }
-            return false;
-        } catch (Exception e) {
-            return false;
         }
+
+        errors.add("Invalid date format: " + date + ". Supported formats: yyyy-MM-dd, MM/dd/yyyy, dd-MM-yyyy, yyyy/MM/dd");
+        valid = false;
+        return false;
     }
 
     public boolean validateNumber(String number, double min) {
         if (number == null || number.trim().isEmpty()) {
+            errors.add("Number cannot be null or empty");
+            valid = false;
             return false;
         }
 
         try {
             double value = Double.parseDouble(number);
-            return value >= min;
+            if (value < min) {
+                errors.add("Number " + number + " is below minimum value " + min);
+                valid = false;
+                return false;
+            }
+
+            return true;
         } catch (NumberFormatException e) {
+            errors.add("Invalid number format: " + number);
+            valid = false;
             return false;
         }
     }
 
     public boolean validateStatus(String status) {
         if (status == null || status.trim().isEmpty()) {
+            errors.add("Status cannot be null or empty");
+            valid = false;
             return false;
         }
-
         List<String> validStatuses = getValidStatus();
-        return validStatuses.stream()
+        
+        boolean isValid = validStatuses.stream()
             .anyMatch(validStatus -> validStatus.equalsIgnoreCase(status.trim()));
+        
+        if (!isValid) {
+            errors.add("Invalid status: " + status + ". Valid statuses are: " + String.join(", ", validStatuses));
+            valid = false;
+        }
+
+        return isValid;
     }
 
     /* Abstract */
