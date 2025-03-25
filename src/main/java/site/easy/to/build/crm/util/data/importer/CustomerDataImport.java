@@ -1,5 +1,7 @@
 package site.easy.to.build.crm.util.data.importer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
+import site.easy.to.build.crm.entity.User;
+import site.easy.to.build.crm.entity.UserProfile;
 
 @Getter
 @Setter
@@ -116,4 +120,38 @@ public class CustomerDataImport extends DataImport{
         return loginInfo;
     }
     
+    private User generateUser() {
+        User user = new User();
+        user.setUsername(this.getName());
+        user.setEmail(this.getEmail());
+        user.setPassword(UUID.randomUUID().toString().substring(0, 12)); 
+        user.setStatus("active");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setHireDate(LocalDate.now());
+        user.setToken(UUID.randomUUID().toString());
+        user.setPasswordSet(false);
+        UserProfile userProfile = generateUserProfile(user);
+        user.setUserProfile(userProfile);
+        return user;
+    }
+
+    private UserProfile generateUserProfile(User user) {
+        UserProfile profile = new UserProfile();
+        String[] nameParts = name.trim().split("\\s+");
+        profile.setFirstName(nameParts[0]);
+        profile.setLastName(nameParts.length > 1 ? nameParts[1] : "Imported");
+        profile.setCountry(generateCountry());
+        profile.setPhone(generatePhoneNumber());
+        profile.setPosition(generatePosition());
+        profile.setDepartment("Customer Relations");
+        profile.setStatus("active");
+        profile.setFacebook(generateSocialMediaHandle("facebook"));
+        profile.setTwitter(generateSocialMediaHandle("twitter"));
+        profile.setYoutube(generateSocialMediaHandle("youtube"));
+        profile.setBio("Generated user profile for imported customer");
+        profile.setAddress(generateAddress());
+        profile.setUser(user);
+        
+        return profile;
+    }
 }
