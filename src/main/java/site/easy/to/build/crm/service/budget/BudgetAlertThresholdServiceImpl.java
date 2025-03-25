@@ -66,8 +66,19 @@ public class BudgetAlertThresholdServiceImpl implements BudgetAlertThresholdServ
         BigDecimal newTotal = totalExistingExpenses.add(newExpenseAmount);
 
         double threshold = this.getThreshold();
-        BigDecimal thresholdLimit = budgetLimit.multiply(BigDecimal.valueOf(threshold));
+        BigDecimal thresholdLimit = budgetLimit.multiply(BigDecimal.valueOf(threshold)).divide(new BigDecimal(100));
 
         return newTotal.compareTo(thresholdLimit) > 0 && newTotal.compareTo(budgetLimit) <= 0;
     }
+
+    @Override
+    public BudgetAlertThreshold getThresholdObject(){
+        return budgetAlertThresholdRepository.findFirstByOrderByIdAsc().orElse(null);
+    }
+
+    @Override
+    public void save(BudgetAlertThreshold threshold) {
+        budgetAlertThresholdRepository.save(threshold);
+    }
+
 }
