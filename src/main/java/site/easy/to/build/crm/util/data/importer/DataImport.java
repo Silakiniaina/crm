@@ -5,7 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import lombok.Getter;
@@ -133,6 +135,28 @@ public abstract class DataImport {
         return checkRequiredValue(value, "Field");
     }
 
+    public boolean checkEmailUnique(String email, Set<String> emails) {
+        if (emails == null) {
+            emails = new HashSet<>();
+        }
+
+        boolean isUnique = emails.stream()
+            .noneMatch(existingEmail -> existingEmail.equalsIgnoreCase(email));
+
+        if (!isUnique) {
+            errors.add("Email already exists: " + email);
+            valid = false;
+            return false;
+        }
+
+        emails.add(email);
+        return true;
+    }
+
+    public boolean checkEmailUnique(String email) {
+        return checkEmailUnique(email, new HashSet<>());
+    }
+    
     /* Abstract */
 
     public abstract List<String> getValidStatus();
