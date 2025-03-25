@@ -26,6 +26,11 @@ public abstract class DataImport {
         this.valid = true;
     }
 
+    public void validate(){
+        this.checkIntegrity();
+        this.checkForeignKey();
+    }
+
     public boolean validateEmail(String email) {
         // Check for null or empty
         if (email == null || email.trim().isEmpty()) {
@@ -156,7 +161,7 @@ public abstract class DataImport {
     public boolean checkEmailUnique(String email) {
         return checkEmailUnique(email, new HashSet<>());
     }
-    
+
     /* Abstract */
 
     public abstract List<String> getValidStatus();
