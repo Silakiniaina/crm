@@ -64,7 +64,15 @@ public abstract class DataImport {
         }
     }
 
-    
+    public boolean validateStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return false;
+        }
+
+        List<String> validStatuses = getValidStatus();
+        return validStatuses.stream()
+            .anyMatch(validStatus -> validStatus.equalsIgnoreCase(status.trim()));
+    }
 
     /* Abstract */
 
