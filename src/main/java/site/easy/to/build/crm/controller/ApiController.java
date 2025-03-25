@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import site.easy.to.build.crm.util.Response;
 import site.easy.to.build.crm.util.ResponseUtil;
 import site.easy.to.build.crm.dto.TotalDataDTO;
+import site.easy.to.build.crm.entity.BudgetAlertThreshold;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.service.budget.BudgetAlertThresholdServiceImpl;
 import site.easy.to.build.crm.service.dashboard.TotalDataService;
 import site.easy.to.build.crm.service.expense.ExpenseServiceImpl;
 
@@ -28,11 +30,13 @@ public class ApiController {
 
     private final TotalDataService totalDataService;
     private final ExpenseServiceImpl expenseService;
+    private final BudgetAlertThresholdServiceImpl thresholdService;
 
     @Autowired
-    public ApiController(ExpenseServiceImpl exp,TotalDataService totalDataService) {
+    public ApiController(BudgetAlertThresholdServiceImpl thres,ExpenseServiceImpl exp,TotalDataService totalDataService) {
         this.totalDataService = totalDataService;
         this.expenseService = exp;
+        this.thresholdService = thres;
     }
 
     @SuppressWarnings("unchecked")
@@ -84,6 +88,19 @@ public class ApiController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense amount updated successfully", (T) expense);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while updating expense", (T) e.getMessage());
+        }
+    }
+
+@GetMapping("/threshold")
+    public <T> ResponseEntity<Response<T>> getThreshold() {
+        try {
+            BudgetAlertThreshold threshold = thresholdService.getThresholdObject();
+            if (threshold == null) {
+                throw new IllegalStateException("No threshold defined");
+            }
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Threshold retrieved successfully", (T) threshold);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching threshold", (T) e.getMessage());
         }
     }
 }
