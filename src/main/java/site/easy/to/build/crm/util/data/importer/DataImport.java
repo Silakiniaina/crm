@@ -167,5 +167,6 @@ public abstract class DataImport {
     public abstract List<String> getValidStatus();
     public abstract void checkIntegrity();
     public abstract void checkForeignKey();
+    public abstract void insertData();
 
 }
