@@ -50,4 +50,17 @@ public abstract class DataImport {
         }
     }
 
+    public boolean validateNumber(String number, double min) {
+        if (number == null || number.trim().isEmpty()) {
+            return false;
+        }
+
+        try {
+            double value = Double.parseDouble(number);
+            return value >= min;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }
