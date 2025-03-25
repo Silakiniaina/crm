@@ -112,6 +112,27 @@ public abstract class DataImport {
         return isValid;
     }
 
+    public boolean checkRequiredValue(String value, String fieldName) {
+        if (value == null) {
+            errors.add(fieldName + " cannot be null");
+            valid = false;
+            return false;
+        }
+
+        String trimmedValue = value.trim();
+        if (trimmedValue.isEmpty()) {
+            errors.add(fieldName + " cannot be empty");
+            valid = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkRequiredValue(String value) {
+        return checkRequiredValue(value, "Field");
+    }
+
     /* Abstract */
 
     public abstract List<String> getValidStatus();
