@@ -1,5 +1,7 @@
 package site.easy.to.build.crm.controller.api;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,16 @@ public class ApiTotalDataController {
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Total data retrieved successfully", (T)totalData);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while fetching total data", (T)e.getMessage());
+        }
+    }
+
+    @GetMapping("/details")
+    public <T> ResponseEntity<Response<T>> getTotalDataDetails(@RequestParam("type") int type) {
+        try {
+            List<?> details = totalDataService.getTotalDataDetails(type);
+            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Details retrieved successfully", (T)details);
+        } catch (Exception e) {
+            return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while fetching details", (T)e.getMessage());
         }
     }
 }

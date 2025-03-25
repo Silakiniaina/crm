@@ -39,17 +39,6 @@ public class ApiController {
         this.thresholdService = thres;
     }
 
-    @SuppressWarnings("unchecked")
-    @GetMapping("/data-total/details")
-    public <T> ResponseEntity<Response<T>> getTotalDataDetails(@RequestParam("type") int type) {
-        try {
-            List<?> details = totalDataService.getTotalDataDetails(type);
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Details retrieved successfully", (T) details);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching details", (T) e.getMessage());
-        }
-    }
-
     @GetMapping("/expenses/{id}")
     public <T> ResponseEntity<Response<T>> getExpenseById(@PathVariable("id") int id) {
         try {
