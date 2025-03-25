@@ -40,17 +40,6 @@ public class ApiController {
     }
 
     @SuppressWarnings("unchecked")
-    @GetMapping("/data-total")
-    public <T> ResponseEntity<Response<T>> getTotalData() {
-        try {
-            TotalDataDTO totalData = totalDataService.getTotalData();
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Total data retrieved successfully", (T) totalData);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching total data", (T) e.getMessage());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @GetMapping("/data-total/details")
     public <T> ResponseEntity<Response<T>> getTotalDataDetails(@RequestParam("type") int type) {
         try {
