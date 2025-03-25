@@ -6,32 +6,26 @@ package site.easy.to.build.crm.config.api;
  import org.springframework.web.bind.MethodArgumentNotValidException;
  import org.springframework.web.bind.annotation.ExceptionHandler;
  import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import site.easy.to.build.crm.util.Response;
+import site.easy.to.build.crm.util.ResponseUtil;
  
- import java.util.Map;
- import java.util.stream.Collectors;
- 
- @RestControllerAdvice
- public class ApiExceptionHandler {
+@RestControllerAdvice
+public class ApiExceptionHandler {
  
      @ExceptionHandler(AuthenticationException.class)
-     public ResponseEntity<?> unauthorized(AuthenticationException e) {
-         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                 .body(Map.of("error", e.getMessage()));
+     public ResponseEntity<Response<Object>> unauthorized(AuthenticationException e) {
+        return ResponseUtil.sendResponse(HttpStatus.UNAUTHORIZED, false, "Request unauthorized", null);
      }
  
  
-     @ExceptionHandler(MethodArgumentNotValidException.class)
-     public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
-         String errorMsg = ex.getBindingResult()
-                 .getFieldErrors()
-                 .stream()
-                 .map(err -> err.getDefaultMessage())
-                 .collect(Collectors.joining(", "));
-         return ResponseEntity.badRequest().body("Erreur de validation : " + errorMsg);
-     }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Response<Object>> handleValidationException(MethodArgumentNotValidException ex) {
+        return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Request method not valid", null);
+    }
  
-     @ExceptionHandler(Exception.class)
-     public ResponseEntity<?> handleException(Exception ex) {
-         return ResponseEntity.badRequest().body("Erreur de validation : " + ex.getMessage());
-     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Response<Object>> handleException(Exception ex) {
+        return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, ex.getMessage(), null);
+    }
  }
