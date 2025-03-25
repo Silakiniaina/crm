@@ -180,4 +180,82 @@ public class CustomerDataImport extends DataImport{
 
         return customer;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CustomerDataImport{\n");
+
+        // Basic fields from this class
+        sb.append("  email='").append(email != null ? email : "null").append("',\n");
+        sb.append("  name='").append(name != null ? name : "null").append("',\n");
+
+        // Fields inherited from DataImport (assuming these exist based on context)
+        sb.append("  email='").append(email != null ? email : "null").append("',\n");
+        sb.append("  name='").append(name != null ? name : "null").append("',\n");
+        sb.append("  errors=").append(this.getErrors() != null ? this.getErrors().toString() : "null").append(",\n");
+        //sb.append("  processedEmails=").append(processedEmails != null ? processedEmails.toString() : "null").append(",\n");
+
+        // Convert the object to Customer and include its details if possible
+        Customer customer = toCustomer();
+        if (customer != null) {
+            sb.append("  generatedCustomer={\n");
+            sb.append("    email='").append(customer.getEmail() != null ? customer.getEmail() : "null").append("',\n");
+            sb.append("    name='").append(customer.getName() != null ? customer.getName() : "null").append("',\n");
+            sb.append("    position='").append(customer.getPosition() != null ? customer.getPosition() : "null").append("',\n");
+            sb.append("    phone='").append(customer.getPhone() != null ? customer.getPhone() : "null").append("',\n");
+            sb.append("    address='").append(customer.getAddress() != null ? customer.getAddress() : "null").append("',\n");
+            sb.append("    city='").append(customer.getCity() != null ? customer.getCity() : "null").append("',\n");
+            sb.append("    state='").append(customer.getState() != null ? customer.getState() : "null").append("',\n");
+            sb.append("    country='").append(customer.getCountry() != null ? customer.getCountry() : "null").append("',\n");
+            sb.append("    description='").append(customer.getDescription() != null ? customer.getDescription() : "null").append("',\n");
+            sb.append("    twitter='").append(customer.getTwitter() != null ? customer.getTwitter() : "null").append("',\n");
+            sb.append("    facebook='").append(customer.getFacebook() != null ? customer.getFacebook() : "null").append("',\n");
+            sb.append("    youtube='").append(customer.getYoutube() != null ? customer.getYoutube() : "null").append("',\n");
+            sb.append("    createdAt=").append(customer.getCreatedAt() != null ? customer.getCreatedAt().toString() : "null").append(",\n");
+
+            // User details
+            User user = customer.getUser();
+            if (user != null) {
+                sb.append("    user={\n");
+                sb.append("      username='").append(user.getUsername() != null ? user.getUsername() : "null").append("',\n");
+                sb.append("      email='").append(user.getEmail() != null ? user.getEmail() : "null").append("',\n");
+                sb.append("      status='").append(user.getStatus() != null ? user.getStatus() : "null").append("',\n");
+                sb.append("      hireDate=").append(user.getHireDate() != null ? user.getHireDate().toString() : "null").append(",\n");
+                sb.append("      createdAt=").append(user.getCreatedAt() != null ? user.getCreatedAt().toString() : "null").append(",\n");
+
+                // UserProfile details
+                UserProfile profile = user.getUserProfile();
+                if (profile != null) {
+                    sb.append("      profile={\n");
+                    sb.append("        firstName='").append(profile.getFirstName() != null ? profile.getFirstName() : "null").append("',\n");
+                    sb.append("        lastName='").append(profile.getLastName() != null ? profile.getLastName() : "null").append("',\n");
+                    sb.append("        country='").append(profile.getCountry() != null ? profile.getCountry() : "null").append("',\n");
+                    sb.append("        phone='").append(profile.getPhone() != null ? profile.getPhone() : "null").append("',\n");
+                    sb.append("        position='").append(profile.getPosition() != null ? profile.getPosition() : "null").append("',\n");
+                    sb.append("        department='").append(profile.getDepartment() != null ? profile.getDepartment() : "null").append("',\n");
+                    sb.append("        status='").append(profile.getStatus() != null ? profile.getStatus() : "null").append("',\n");
+                    sb.append("        bio='").append(profile.getBio() != null ? profile.getBio() : "null").append("'\n");
+                    sb.append("      },\n");
+                }
+                sb.append("    },\n");
+            }
+
+            // CustomerLoginInfo details
+            CustomerLoginInfo loginInfo = customer.getCustomerLoginInfo();
+            if (loginInfo != null) {
+                sb.append("    loginInfo={\n");
+                sb.append("      username='").append(loginInfo.getUsername() != null ? loginInfo.getUsername() : "null").append("',\n");
+                sb.append("      token='").append(loginInfo.getToken() != null ? loginInfo.getToken() : "null").append("',\n");
+                sb.append("      passwordSet=").append(loginInfo.isPasswordSet()).append("\n");
+                sb.append("    }\n");
+            }
+            sb.append("  }\n");
+        } else {
+            sb.append("  generatedCustomer=null (validation failed or incomplete data)\n");
+        }
+
+        sb.append("}");
+        return sb.toString();
+    }
 }
