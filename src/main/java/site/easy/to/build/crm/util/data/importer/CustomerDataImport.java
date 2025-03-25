@@ -154,4 +154,30 @@ public class CustomerDataImport extends DataImport{
         
         return profile;
     }
+
+    public Customer toCustomer() {
+        Customer customer = new Customer();
+        customer.setEmail(this.getEmail());
+        customer.setName(this.getName());
+        User generatedUser = generateUser();
+        if (generatedUser == null) {
+            this.getErrors().add("Failed to generate user for customer import");
+            return null;
+        }
+        customer.setUser(generatedUser);
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setPosition(generatePosition());
+        customer.setPhone(generatePhoneNumber());
+        customer.setAddress(generateAddress());
+        customer.setCity(generateCity());
+        customer.setState(generateState());
+        customer.setCountry(generateCountry());
+        customer.setDescription(generateDescription());
+        customer.setTwitter(generateSocialMediaHandle("twitter"));
+        customer.setFacebook(generateSocialMediaHandle("facebook"));
+        customer.setYoutube(generateSocialMediaHandle("youtube"));
+        customer.setCustomerLoginInfo(generateCustomerLoginInfo(customer));
+
+        return customer;
+    }
 }
