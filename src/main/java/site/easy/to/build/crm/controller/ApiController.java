@@ -39,19 +39,6 @@ public class ApiController {
         this.thresholdService = thres;
     }
 
-    @GetMapping("/expenses/{id}")
-    public <T> ResponseEntity<Response<T>> getExpenseById(@PathVariable("id") int id) {
-        try {
-            Expense expense = expenseService.findById(id);
-            if (expense == null) {
-                throw new IllegalArgumentException("Expense not found with ID: " + id);
-            }
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Expense retrieved successfully", (T) expense);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching expense", (T) e.getMessage());
-        }
-    }
-
     @PostMapping("/expenses/update")
     public <T> ResponseEntity<Response<T>> updateExpenseAmount(
             @RequestParam("id") int id,
