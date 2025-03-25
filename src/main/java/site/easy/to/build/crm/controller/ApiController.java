@@ -35,19 +35,6 @@ public class ApiController {
         this.thresholdService = thres;
     }
 
-@GetMapping("/threshold")
-    public <T> ResponseEntity<Response<T>> getThreshold() {
-        try {
-            BudgetAlertThreshold threshold = thresholdService.getThresholdObject();
-            if (threshold == null) {
-                throw new IllegalStateException("No threshold defined");
-            }
-            return ResponseUtil.sendResponse(HttpStatus.OK, true, "Threshold retrieved successfully", (T) threshold);
-        } catch (Exception e) {
-            return ResponseUtil.sendResponse(HttpStatus.BAD_REQUEST, false, "Error while fetching threshold", (T) e.getMessage());
-        }
-    }
-
     @PostMapping("/threshold")
     public <T> ResponseEntity<Response<T>> updateThreshold(
             @RequestParam("id") int id,
