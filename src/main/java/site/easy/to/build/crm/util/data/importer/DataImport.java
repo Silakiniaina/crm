@@ -3,6 +3,7 @@ package site.easy.to.build.crm.util.data.importer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -62,5 +63,11 @@ public abstract class DataImport {
             return false;
         }
     }
+
+    
+
+    /* Abstract */
+
+    public abstract List<String> getValidStatus();
 
 }
