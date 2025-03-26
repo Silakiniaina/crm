@@ -123,6 +123,9 @@ public class ExpenseController {
         }
     
         try {
+            if(expense.getAmount().doubleValue() < 0){
+                throw new Exception("Amount for expense should be positive");
+            }
             Expense saved = expenseService.addExpense(expense, false);
             redirectAttributes.addFlashAttribute("successMessage", "Expense saved successfully.");
             redirectAttributes.addFlashAttribute("budgetOverrun", false);
