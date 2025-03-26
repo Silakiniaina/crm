@@ -117,6 +117,9 @@ public class CustomerBudgetController {
         
         // Save the budget
         try {
+            if(budget.getAmount() < 0){
+                throw new Exception("Amount for budget should be positive");
+            }
             budgetService.addBudget(budget);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to create budget: " + e.getMessage());

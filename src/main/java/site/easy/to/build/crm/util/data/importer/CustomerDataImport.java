@@ -57,7 +57,7 @@ public class CustomerDataImport extends DataImport {
     }
 
     @Override
-    public void insertData() {
+    public void insertData(){
         if (!isValid()) {
             return;
         }
@@ -69,6 +69,8 @@ public class CustomerDataImport extends DataImport {
 
             if (generatedUser != null) {
                 userRepository.save(generatedUser);
+            }else{
+                System.out.println("Generated user null");
             }
             if (loginInfo != null) {
                 customerLoginInfoRepository.save(loginInfo);
@@ -85,12 +87,7 @@ public class CustomerDataImport extends DataImport {
         Customer customer = new Customer();
         customer.setEmail(this.getEmail());
         customer.setName(this.getName());
-        User generatedUser = generateUser();
-        if (generatedUser == null) {
-            this.getErrors().add("Failed to generate user for customer import at line " + this.getLineNumber());
-            return null;
-        }
-        customer.setUser(generatedUser);
+        customer.setUser(this.getCurrentUser());
         customer.setCreatedAt(LocalDateTime.now());
         customer.setPosition(generatePosition());
         customer.setPhone(generatePhoneNumber());
@@ -193,7 +190,7 @@ public class CustomerDataImport extends DataImport {
         user.setUsername(this.getName());
         user.setEmail(this.getEmail());
         user.setPassword(UUID.randomUUID().toString().substring(0, 12));
-        user.setStatus("active");
+        user.setStatus("inactive");
         user.setCreatedAt(LocalDateTime.now());
         user.setHireDate(LocalDate.now());
         user.setToken(UUID.randomUUID().toString());

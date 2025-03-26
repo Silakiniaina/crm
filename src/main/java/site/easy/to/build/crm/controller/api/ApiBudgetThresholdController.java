@@ -31,6 +31,7 @@ public class ApiBudgetThresholdController {
             if (threshold == null) {
                 return ResponseUtil.sendResponse(HttpStatus.NOT_FOUND, false, "No threshold defined", null);
             }
+
             return ResponseUtil.sendResponse(HttpStatus.OK, true, "Threshold retrieved successfully", (T)threshold);
         } catch (Exception e) {
             return ResponseUtil.sendResponse(HttpStatus.INTERNAL_SERVER_ERROR, false, "Error while fetching threshold", (T)e.getMessage());
@@ -48,6 +49,9 @@ public class ApiBudgetThresholdController {
                 existingThreshold = new BudgetAlertThreshold();
             }
             
+            if(thresholdRequest.getThreshold() < 0 || thresholdRequest.getThreshold() > 100){
+                throw new Exception("The threshold value must be between 0 and 100");
+            }
             existingThreshold.setThreshold(thresholdRequest.getThreshold());
             thresholdService.save(existingThreshold);
             
