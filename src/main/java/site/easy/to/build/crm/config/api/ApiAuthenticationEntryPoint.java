@@ -15,7 +15,7 @@ package site.easy.to.build.crm.config.api;
                           AuthenticationException authException) throws IOException {
          response.setContentType("application/json");
          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-         response.getWriter().write("{\"message\": \"Unauthorized - Invalid credentials or token\", \"status\": 403, \"success\": false, \"data\": null}");
+         response.getWriter().write("{\"message\": \"Unauthorized - Invalid credentials or token\", \"status\": 403, \"success\": false, \"data\": "+authException.getMessage()+"}");
          response.getWriter().flush();
      }
  }
