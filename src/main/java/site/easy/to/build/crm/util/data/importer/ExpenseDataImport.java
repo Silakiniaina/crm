@@ -15,7 +15,10 @@ import site.easy.to.build.crm.repository.TicketRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
@@ -150,7 +153,6 @@ public class ExpenseDataImport extends DataImport {
     }
 
     private int generateExpenseType() {
-        // 0 for lead, 1 for ticket
         return "lead".equalsIgnoreCase(type) ? 1 : 2;
     }
 
@@ -163,9 +165,19 @@ public class ExpenseDataImport extends DataImport {
         lead.setManager(currentUser);
         lead.setEmployee(currentUser);
         lead.setCustomer(customer);
-        lead.setCreatedAt(java.time.LocalDateTime.now());
+        lead.setCreatedAt(generateRandomDate());
         return lead;
     }
+
+    private LocalDateTime generateRandomDate() {
+        LocalDateTime startDate = LocalDateTime.of(2023, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.now();
+        long startEpoch = startDate.toEpochSecond(ZoneOffset.UTC);
+        long endEpoch = endDate.toEpochSecond(ZoneOffset.UTC);
+        long randomEpoch = ThreadLocalRandom.current().nextLong(startEpoch, endEpoch);
+        return LocalDateTime.ofEpochSecond(randomEpoch, 0, ZoneOffset.UTC);
+    }
+
 
     private Ticket generateTicket(Customer customer) {
         Ticket ticket = new Ticket();
@@ -176,7 +188,7 @@ public class ExpenseDataImport extends DataImport {
         ticket.setManager(currentUser);
         ticket.setEmployee(currentUser);
         ticket.setCustomer(customer);
-        ticket.setCreatedAt(java.time.LocalDateTime.now());
+        ticket.setCreatedAt(generateRandomDate());
         return ticket;
     }
 
