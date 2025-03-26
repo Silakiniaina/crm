@@ -49,6 +49,10 @@ public class ApiExpensesController {
                 return ResponseUtil.sendResponse(HttpStatus.NOT_FOUND, false, "Expense not found", null);
             }
             
+            if(updatedExpense.getAmount().doubleValue() < 0){
+                throw new Exception("The amount for expense should be positive");
+            }
+            
             existingExpense.setAmount(updatedExpense.getAmount());
             expenseService.addExpense(existingExpense, false);
             
