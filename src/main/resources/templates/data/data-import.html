@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{/general/head.html}"></div>
+
+<!-- Custom CSS -->
+<link th:href="@{/css/bootstrap-wysihtml5.css}" rel="stylesheet">
+<link th:href="@{/css/style.min.css}" rel="stylesheet">
+<!-- page css -->
+<link th:href="@{/css/pages/inbox.css}" rel="stylesheet">
+
+</head>
+
+<body class="skin-blue fixed-layout">
+<div class="preloader">
+    <div class="loader">
+        <div class="loader__figure"></div>
+        <p class="loader__label">CRM</p>
+    </div>
+</div>
+
+<div id="main-wrapper">
+    <div th:insert="~{/general/header.html}"></div>
+    <div th:insert="~{/general/left-sidebar.html}"></div>
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            <div th:insert="~{/general/page-titles.html}"></div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Import Data</h4>
+                            <form th:action="@{/data-import}" method="post" enctype="multipart/form-data">
+                                <div class="form-group m-t-20">
+                                    <label for="customerFile">Customer Data File (.csv):</label>
+                                    <input type="file" id="customerFile" name="customerFile" 
+                                           class="form-control" accept=".csv">
+                                </div>
+
+                                <div class="form-group m-t-20">
+                                    <label for="budgetFile">Budget Data File (.csv):</label>
+                                    <input type="file" id="budgetFile" name="budgetFile" 
+                                           class="form-control" accept=".csv">
+                                </div>
+
+                                <div class="form-group m-t-20">
+                                    <label for="expenseFile">Expense Data File (.csv):</label>
+                                    <input type="file" id="expenseFile" name="expenseFile" 
+                                           class="form-control" accept=".csv">
+                                </div>
+
+                                <button type="submit" class="btn btn-primary m-t-20">Import Data</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Success/Error Messages -->
+            <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" 
+                 aria-labelledby="resultModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="resultModalLabel" 
+                                th:text="${successMessage != null} ? 'Import Successful' : 'Import Errors'">
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div th:if="${successMessage != null}">
+                                <p class="text-success" th:text="${successMessage}"></p>
+                            </div>
+                            <div th:if="${errorMap != null}">
+                                <div th:each="entry : ${errorMap}">
+                                    <h6 th:text="${entry.key}"></h6>
+                                    <ul>
+                                        <li th:each="error : ${entry.value}" 
+                                            th:text="${error}" class="text-danger"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" 
+                                    data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:insert="~{/general/right-sidebar.html}"></div>
+        </div>
+    </div>
+
+    <div th:insert="~{/general/footer.html}"></div>
+</div>
+
+<!-- JavaScript -->
+<script th:src="@{/js/library/jquery-3.2.1.min.js}"></script>
+<script th:src="@{/js/library/popper.min.js}"></script>
+<script th:src="@{/js/library/bootstrap.min.js}"></script>
+<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}"></script>
+<script th:src="@{/js/library/waves.js}"></script>
+<script th:src="@{/js/library/sidebarmenu.js}"></script>
+<script th:src="@{/js/library/sticky-kit.min.js}"></script>
+<script th:src="@{/js/library/jquery.sparkline.min.js}"></script>
+<script th:src="@{/js/library/custom.min.js}"></script>
+
+<!-- Show modal if there are messages -->
+<script th:inline="javascript">
+    $(document).ready(function() {
+        var hasMessages = /*[[${successMessage != null || errorMap != null}]]*/ false;
+        if (hasMessages) {
+            $('#resultModal').modal('show');
+        }
+    });
+</script>
+
+</body>
+</html>
