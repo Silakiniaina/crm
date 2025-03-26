@@ -88,4 +88,12 @@ public class CustomerLoginInfo {
     public void setEmail(String email) {
         this.username = email;
     }
+
+    public void setUsername(String userName){
+        this.username = userName;
+    }
+
+    public String getUsername(){
+        return this.username;
+    }
 }

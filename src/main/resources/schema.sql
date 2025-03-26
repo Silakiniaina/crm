@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `oauth_users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `oauth_users_ibfk_1` (`user_id`),
-  CONSTRAINT `oauth_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `oauth_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `user_profile` (
   `address` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   `role_id` int NOT NULL,
   PRIMARY KEY (`user_id`,`role_id`),
   KEY `role_id` (`role_id`),
-  CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `user_roles_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `email_template` (
   PRIMARY KEY (`template_id`),
   UNIQUE KEY `name` (`name`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `email_template_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `email_template_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -224,8 +224,8 @@ CREATE TABLE IF NOT EXISTS `customer` (
     PRIMARY KEY (`customer_id`),
     KEY `user_id` (`user_id`),
     KEY `profile_id` (`profile_id`),
-    CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-    CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `customer_login_info` (`id`)
+    CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `customer_login_info` (`id`) ON DELETE CASCADE
   ) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
   /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -311,9 +311,9 @@ CREATE TABLE IF NOT EXISTS `trigger_contract` (
   KEY `lead_id` (`lead_id`),
   KEY `user_id` (`user_id`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `trigger_contract_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`),
-  CONSTRAINT `trigger_contract_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `trigger_contract_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`)
+  CONSTRAINT `trigger_contract_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`) ON DELETE CASCADE,
+  CONSTRAINT `trigger_contract_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `trigger_contract_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -349,14 +349,14 @@ CREATE TABLE IF NOT EXISTS `contract_settings` (
   KEY `start_email_template` (`start_email_template`),
   KEY `end_email_template` (`end_email_template`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `contract_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `contract_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `contract_settings_ibfk_2` FOREIGN KEY (`status_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `contract_settings_ibfk_3` FOREIGN KEY (`amount_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `contract_settings_ibfk_4` FOREIGN KEY (`subject_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `contract_settings_ibfk_5` FOREIGN KEY (`description_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `contract_settings_ibfk_6` FOREIGN KEY (`start_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `contract_settings_ibfk_7` FOREIGN KEY (`end_email_template`) REFERENCES `email_template` (`template_id`),
-  CONSTRAINT `contract_settings_ibfk_8` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`)
+  CONSTRAINT `contract_settings_ibfk_8` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `lead_action` (
   `date_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `lead_id` (`lead_id`),
-  CONSTRAINT `lead_action_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`)
+  CONSTRAINT `lead_action_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -405,12 +405,12 @@ CREATE TABLE IF NOT EXISTS `lead_settings` (
   KEY `meeting_email_template` (`meeting_email_template`),
   KEY `name_email_template` (`name_email_template`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `lead_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `lead_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `lead_settings_ibfk_2` FOREIGN KEY (`status_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `lead_settings_ibfk_3` FOREIGN KEY (`phone_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `lead_settings_ibfk_4` FOREIGN KEY (`meeting_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `lead_settings_ibfk_5` FOREIGN KEY (`name_email_template`) REFERENCES `email_template` (`template_id`),
-  CONSTRAINT `lead_settings_ibfk_6` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`)
+  CONSTRAINT `lead_settings_ibfk_6` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -444,12 +444,12 @@ CREATE TABLE IF NOT EXISTS `ticket_settings` (
   KEY `priority_email_template` (`priority_email_template`),
   KEY `description_email_template` (`description_email_template`),
   KEY `customer_id` (`customer_id`),
-  CONSTRAINT `ticket_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `ticket_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ticket_settings_ibfk_2` FOREIGN KEY (`status_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `ticket_settings_ibfk_3` FOREIGN KEY (`subject_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `ticket_settings_ibfk_4` FOREIGN KEY (`priority_email_template`) REFERENCES `email_template` (`template_id`),
   CONSTRAINT `ticket_settings_ibfk_5` FOREIGN KEY (`description_email_template`) REFERENCES `email_template` (`template_id`),
-  CONSTRAINT `ticket_settings_ibfk_6` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`)
+  CONSTRAINT `ticket_settings_ibfk_6` FOREIGN KEY (`customer_id`) REFERENCES `customer_login_info` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -470,8 +470,8 @@ CREATE TABLE IF NOT EXISTS `file` (
   PRIMARY KEY (`file_id`),
   KEY `lead_id` (`lead_id`),
   KEY `contract_id` (`contract_id`),
-  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`),
-  CONSTRAINT `file_ibfk_2` FOREIGN KEY (`contract_id`) REFERENCES `trigger_contract` (`contract_id`)
+  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`) ON DELETE CASCADE,
+  CONSTRAINT `file_ibfk_2` FOREIGN KEY (`contract_id`) REFERENCES `trigger_contract` (`contract_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -491,8 +491,8 @@ CREATE TABLE IF NOT EXISTS `google_drive_file` (
   PRIMARY KEY (`id`),
   KEY `lead_id` (`lead_id`),
   KEY `contract_id` (`contract_id`),
-  CONSTRAINT `google_drive_file_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`),
-  CONSTRAINT `google_drive_file_ibfk_2` FOREIGN KEY (`contract_id`) REFERENCES `trigger_contract` (`contract_id`)
+  CONSTRAINT `google_drive_file_ibfk_1` FOREIGN KEY (`lead_id`) REFERENCES `trigger_lead` (`lead_id`) ON DELETE CASCADE,
+  CONSTRAINT `google_drive_file_ibfk_2` FOREIGN KEY (`contract_id`) REFERENCES `trigger_contract` (`contract_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -513,8 +513,8 @@ CREATE  TABLE IF NOT EXISTS `customer_budget` (
 	`created_at` DATE  DEFAULT (curdate()),
 	`customer_id` INT UNSIGNED NOT NULL,
 	`created_by` INT,
-  CONSTRAINT `fk_customer_budget_customer` FOREIGN KEY ( `customer_id` ) REFERENCES `customer`( `customer_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_customer_budget_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_customer_budget_customer` FOREIGN KEY ( `customer_id` ) REFERENCES `customer`( `customer_id` ) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_customer_budget_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE CASCADE ON UPDATE CASCADE
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -529,9 +529,9 @@ CREATE  TABLE IF NOT EXISTS `expenses` (
 	`lead_id`              INT UNSIGNED      ,
 	`ticket_id`            INT UNSIGNED      ,
 	`created_by`           INT ,
-  CONSTRAINT `fk_expenses_trigger_lead` FOREIGN KEY ( `lead_id` ) REFERENCES `trigger_lead`( `lead_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_expenses_trigger_ticket` FOREIGN KEY ( `ticket_id` ) REFERENCES `trigger_ticket`( `ticket_id` ) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_expenses_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE NO ACTION ON UPDATE NO ACTION      
+  CONSTRAINT `fk_expenses_trigger_lead` FOREIGN KEY ( `lead_id` ) REFERENCES `trigger_lead`( `lead_id` ) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_expenses_trigger_ticket` FOREIGN KEY ( `ticket_id` ) REFERENCES `trigger_ticket`( `ticket_id` ) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_expenses_users` FOREIGN KEY ( `created_by` ) REFERENCES `users`( `id` ) ON DELETE CASCADE ON UPDATE CASCADE      
  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
