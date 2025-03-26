@@ -20,6 +20,7 @@ public abstract class DataImport {
     private List<String> errors;
     private boolean valid;
     private String fileName;
+    private long lineNumber;
 
     public DataImport() {
         this.errors = new ArrayList<>();
@@ -34,14 +35,14 @@ public abstract class DataImport {
     public boolean validateEmail(String email) {
         // Check for null or empty
         if (email == null || email.trim().isEmpty()) {
-            errors.add("Email cannot be null or empty");
+            errors.add("Email cannot be null or empty at line "+this.getLineNumber());
             valid = false;
             return false;
         }
 
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         if (!Pattern.compile(emailRegex).matcher(email).matches()) {
-            errors.add("Invalid email format: " + email);
+            errors.add("Invalid email format: " + email +" at line "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -51,7 +52,7 @@ public abstract class DataImport {
 
     public boolean validateDate(String date) {
         if (date == null || date.trim().isEmpty()) {
-            errors.add("Date cannot be null or empty");
+            errors.add("Date cannot be null or empty at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -72,14 +73,14 @@ public abstract class DataImport {
             }
         }
 
-        errors.add("Invalid date format: " + date + ". Supported formats: yyyy-MM-dd, MM/dd/yyyy, dd-MM-yyyy, yyyy/MM/dd");
+        errors.add("Invalid date format: " + date + ". Supported formats: yyyy-MM-dd, MM/dd/yyyy, dd-MM-yyyy, yyyy/MM/dd at line : "+this.getLineNumber());
         valid = false;
         return false;
     }
 
     public boolean validateNumber(String number, double min) {
         if (number == null || number.trim().isEmpty()) {
-            errors.add("Number cannot be null or empty");
+            errors.add("Number cannot be null or empty at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -87,14 +88,14 @@ public abstract class DataImport {
         try {
             double value = Double.parseDouble(number);
             if (value < min) {
-                errors.add("Number " + number + " is below minimum value " + min);
+                errors.add("Number " + number + " is below minimum value " + min +" at line : "+this.getLineNumber());
                 valid = false;
                 return false;
             }
 
             return true;
         } catch (NumberFormatException e) {
-            errors.add("Invalid number format: " + number);
+            errors.add("Invalid number format: " + number +" at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -102,7 +103,7 @@ public abstract class DataImport {
 
     public boolean validateStatus(String status) {
         if (status == null || status.trim().isEmpty()) {
-            errors.add("Status cannot be null or empty");
+            errors.add("Status cannot be null or empty at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -112,7 +113,7 @@ public abstract class DataImport {
             .anyMatch(validStatus -> validStatus.equalsIgnoreCase(status.trim()));
         
         if (!isValid) {
-            errors.add("Invalid status: " + status + ". Valid statuses are: " + String.join(", ", validStatuses));
+            errors.add("Invalid status: " + status + ". Valid statuses are: " + String.join(", ", validStatuses)+" at line : "+this.getLineNumber());
             valid = false;
         }
 
@@ -121,14 +122,14 @@ public abstract class DataImport {
 
     public boolean checkRequiredValue(String value, String fieldName) {
         if (value == null) {
-            errors.add(fieldName + " cannot be null");
+            errors.add(fieldName + " cannot be null at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
 
         String trimmedValue = value.trim();
         if (trimmedValue.isEmpty()) {
-            errors.add(fieldName + " cannot be empty");
+            errors.add(fieldName + " cannot be empty at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
@@ -149,7 +150,7 @@ public abstract class DataImport {
             .noneMatch(existingEmail -> existingEmail.equalsIgnoreCase(email));
 
         if (!isUnique) {
-            errors.add("Email already exists: " + email);
+            errors.add("Email already exists: " + email +" at line : "+this.getLineNumber());
             valid = false;
             return false;
         }
